@@ -13,7 +13,6 @@ SPACY_NAME_MODELS = {
     "en": "en_core_web_sm",
     "es": "es_core_news_sm"
 }
-SPACY_DEFAULT_LANG_MODEL = "es"
 
 # -- WHISPER
 WHISPER_DEVICE = "cpu" # "cpu" | "cuda"

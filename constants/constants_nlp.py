@@ -17,3 +17,10 @@ SPACY_NAME_MODELS = {
 # -- WHISPER
 WHISPER_DEVICE = "cpu" # "cpu" | "cuda"
 WHISPER_MODEL_VERSION = "small" # tiny | base | small | medium | large
+
+
+POLARITY_MAP = {
+    "NEG": 0,
+    "NEU": 1,
+    "POS": 2
+}

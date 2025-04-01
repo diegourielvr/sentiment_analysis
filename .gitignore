@@ -11,5 +11,7 @@ __pycache__/
 # IntelliJ project files
 .idea/
 
+.vscode/
+
 # Archivos recolectados fusionados
 data/raw/scraped_merged/

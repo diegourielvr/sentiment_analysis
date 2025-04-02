@@ -1,9 +1,13 @@
+from re import I
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, roc_auc_score
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import ConfusionMatrixDisplay
 from constants.constants_nlp import POLARITY_MAP
+
+import matplotlib.pyplot as plt
+
 import joblib
 import os
 
@@ -15,22 +19,27 @@ def get_metrics(y_true, y_pred):
         "f1_score": f1_score(y_true, y_pred, average="macro")
     }
     
-    print(f"Accuracy: {metrics['accuracy']}\n")
-    
-    print("Reporte de clasificacion")
-    print(classification_report(y_true, y_pred))
+    return metrics
 
-    print("Matriz de confusión")
+def show_confusion_matrix(y_true, y_pred, title="", path=None, dpi=300):
+    print(f"\n{title}")
+    cr = classification_report(y_true, y_pred)
     cm = confusion_matrix(y_true, y_pred)
-    show_confusion_matrix(cm)
-    return metrics, cm
 
-def show_confusion_matrix(cm, title=""):
+    print("Reporte de clasificacion")
+    print(cr)
+    
+    print("Matriz de confusión")
     labels = None
     if cm.shape[0] == 3:
         labels = list(POLARITY_MAP.keys())
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
     disp.plot(cmap="Oranges")
+    plt.title(title)
+    plt.show()
+    if path:
+        plt.savefig(path, dpi)
+        print(f"Imagen guardada en: {path}")
 
 def build_datasets(
     data_path: str, text = 'text', label = 'polarity',
@@ -93,12 +102,22 @@ def save_metrics(metrics, path: str):
     row = pd.DataFrame([metrics])
     row.to_csv(path, index=False, mode="a", header=not os.path.exists(path))
 
-def evaluate_model(model, dataset):
+def evaluate_model(model, dataset, title):
     x, y_true = dataset['text'], dataset['polarity']
     y_pred = model.predict(x)
-    metrics, _ = get_metrics(y_true, y_pred)
-
+    metrics = get_metrics(y_true, y_pred)
+    show_confusion_matrix(y_pred, y_true, title)
     return metrics
+
+def show_losses(train_losses, val_losses):
+    x = range(1, len(train_losses)+1)
+    plt.plot(x, train_losses, label="Pérdida Entrenamiento")
+    plt.plot(x, val_losses, label="Pérdida Validación", linestyle="dashed")
+    plt.xlabel("Épocas")
+    plt.ylabel("Log Loss")
+    plt.title("Evolución de la Pérdida")
+    plt.legend()
+    plt.show()
 
 def order_dataset(data: pd.DataFrame, text_col="text", ascending=False):
     # Ordenar por número de palabras (de mayor a menor)

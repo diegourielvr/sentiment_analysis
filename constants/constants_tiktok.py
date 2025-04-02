@@ -40,7 +40,9 @@ SVM_TFIDF_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","svm","svm_tf
 SVM_BOW_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","svm","svm_bow_pipeline.pkl")
 NB_TFIDF_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","nb","nb_tfidf_pipeline.pkl")
 NB_BOW_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","nb","nb_bow_pipeline.pkl")
+LR_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "lr_pipeline.pkl")
 
 # Metrics Path
 TIKTOK_SVM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_svm_metrics.csv")
 TIKTOK_NB_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_nb_metrics.csv")
+TIKTOK_LR_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_lr_metrics.csv")

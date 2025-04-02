@@ -1,5 +1,36 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, roc_auc_score
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+from constants.constants_nlp import POLARITY_MAP
+import joblib
+import os
+
+def get_metrics(y_true, y_pred):
+    metrics = {
+        "accuracy": accuracy_score(y_true, y_pred),
+        "recall": recall_score(y_true, y_pred, average="macro"),
+        "precision": precision_score(y_true, y_pred, average="macro"),
+        "f1_score": f1_score(y_true, y_pred, average="macro")
+    }
+    
+    print(f"Accuracy: {metrics['accuracy']}\n")
+    
+    print("Reporte de clasificacion")
+    print(classification_report(y_true, y_pred))
+
+    print("Matriz de confusión")
+    cm = confusion_matrix(y_true, y_pred)
+    show_confusion_matrix(cm)
+    return metrics, cm
+
+def show_confusion_matrix(cm, title=""):
+    labels = None
+    if cm.shape[0] == 3:
+        labels = list(POLARITY_MAP.keys())
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    disp.plot(cmap="Oranges")
 
 def build_datasets(
     data_path: str, text = 'text', label = 'polarity',
@@ -48,8 +79,26 @@ def build_datasets(
             random_state=random_state,
             stratify=test_df[label])
     
-    return train_df, test_df, val_df
-    
+    return train_df.reset_index(drop=True), test_df.reset_index(drop=True), val_df.reset_index(drop=True)
+
+def save_model(model, path):
+    joblib.dump(model, path)
+    print(f"Modelo guardado en: {path}")
+
+def load_model(path):
+    print(f"Cargando modelo: {path}")
+    return joblib.load(path)
+
+def save_metrics(metrics, path: str):
+    row = pd.DataFrame([metrics])
+    row.to_csv(path, index=False, mode="a", header=not os.path.exists(path))
+
+def evaluate_model(model, dataset):
+    x, y_true = dataset['text'], dataset['polarity']
+    y_pred = model.predict(x)
+    metrics, _ = get_metrics(y_true, y_pred)
+
+    return metrics
 
 def order_dataset(data: pd.DataFrame, text_col="text", ascending=False):
     # Ordenar por número de palabras (de mayor a menor)

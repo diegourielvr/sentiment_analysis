@@ -24,3 +24,9 @@ POLARITY_MAP = {
     "NEU": 1,
     "POS": 2
 }
+
+INDEX_TO_POLARITY = {
+    0: "NEG",
+    1: "NEU",
+    2: "POS"
+}

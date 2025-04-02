@@ -34,3 +34,10 @@ TIKTOK_SENTIMENT_TEXT = os.path.join(ROOT_DIR, "data","tiktok","raw","tiktok_sen
 # Datasets para entrenamiento
 TIKTOK_DATASET_SENTENCES = os.path.join(ROOT_DIR, "data","tiktok","clean","tiktok_dataset_sentences.csv")
 TIKTOK_DATASET_TEXT = os.path.join(ROOT_DIR, "data","tiktok","clean","tiktok_dataset_text.csv")
+
+# Models path
+SVM_TFIDF_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","svm","svm_tfidf_pipline.pkl")
+SVM_BOW_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","svm","svm_bow_pipline.pkl")
+
+# Metrics Path
+TIKTOK_SVM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_svm_metrics.csv")

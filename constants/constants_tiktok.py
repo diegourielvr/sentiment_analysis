@@ -42,8 +42,10 @@ EMBEDDING_W2V_TIKTOK_SENTENCES_PATH = os.path.join(ROOT_DIR, "models", "tiktok",
 SVM_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","svm_pipeline.pkl")
 NB_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","nb_pipeline.pkl")
 LR_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "lr_pipeline.pkl")
+SWEM_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "swem_model.pkl")
 
 # Metrics Path
 TIKTOK_SVM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_svm_metrics.csv")
 TIKTOK_NB_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_nb_metrics.csv")
 TIKTOK_LR_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_lr_metrics.csv")
+TIKTOK_SWEM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_swem_metrics.csv")

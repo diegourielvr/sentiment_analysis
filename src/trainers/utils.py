@@ -143,6 +143,16 @@ class EmbeddingLoader:
             embeddings.append(np.array([self.get_embedding(token) for token in tokens]))
         return embeddings
 
+class LRModelArgs:
+    penalty: str
+    C: float
+    max_iter: int
+    solver: str
+
+class SVMModelArgs:
+    kernel: str
+    C: float
+
 def order_dataset(data: pd.DataFrame, text_col="text", ascending=False):
     # Ordenar por número de palabras (de mayor a menor)
     data['num_words'] = data[text_col].apply(lambda x: len(str(x).split()))

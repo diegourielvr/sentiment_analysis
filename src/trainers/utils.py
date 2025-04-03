@@ -1,4 +1,5 @@
-from re import I
+import gensim
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, roc_auc_score
@@ -118,6 +119,29 @@ def show_losses(train_losses, val_losses):
     plt.title("Evolución de la Pérdida")
     plt.legend()
     plt.show()
+
+class EmbeddingLoader:
+    def __init__(self, embeddings_path: str, type: str='w2v'):
+        self.word_vectors = None
+        if type == 'w2v':
+            self.word_vectors = gensim.models.KeyedVectors.load_word2vec_format(embeddings_path, binary=True)
+    
+    def get_word_vectors(self):
+        return self.word_vectors
+            
+    def vector_size(self):
+        return self.word_vectors.vector_size
+    
+    def get_embedding(self, word: str):
+        if word in self.word_vectors:
+            return self.word_vectors[word] # numpy.ndarray
+        return np.zeros(self.word_vectors.vector_size)
+
+    def get_embeddings(self, tokens_list: list[list[str]]):
+        embeddings = []
+        for tokens in tokens_list:
+            embeddings.append(np.array([self.get_embedding(token) for token in tokens]))
+        return embeddings
 
 def order_dataset(data: pd.DataFrame, text_col="text", ascending=False):
     # Ordenar por número de palabras (de mayor a menor)

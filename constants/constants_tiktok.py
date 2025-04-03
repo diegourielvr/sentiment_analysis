@@ -35,6 +35,9 @@ TIKTOK_SENTIMENT_TEXT = os.path.join(ROOT_DIR, "data","tiktok","raw","tiktok_sen
 TIKTOK_DATASET_SENTENCES = os.path.join(ROOT_DIR, "data","tiktok","clean","tiktok_dataset_sentences.csv")
 TIKTOK_DATASET_TEXT = os.path.join(ROOT_DIR, "data","tiktok","clean","tiktok_dataset_text.csv")
 
+# Modelos de W2V
+EMBEDDING_W2V_TIKTOK_SENTENCES_PATH = os.path.join(ROOT_DIR, "models", "tiktok", "embeddings", "w2v_embeddings_tiktok_sentences")
+
 # Models path
 SVM_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","svm_pipeline.pkl")
 NB_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","nb_pipeline.pkl")

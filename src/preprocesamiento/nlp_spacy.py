@@ -114,3 +114,17 @@ def preprocesamiento(documentos: list[str], stemming=True, lang="es") -> list[st
     
     print(f"Total de documentos preprocesados: {len(documentos_preprocesados)}")
     return documentos_preprocesados
+
+class Tokenizer:
+    def __init__(self, lang: str="es"):
+        self.nlp = get_model(lang)
+        
+    def tokenize(self, text_list: list[str]):
+        docs = self.nlp.pipe(tqdm(text_list))
+        return list(
+            map(
+                lambda doc: [token.text for token in doc], 
+                docs
+            )
+        )
+        

@@ -36,10 +36,8 @@ TIKTOK_DATASET_SENTENCES = os.path.join(ROOT_DIR, "data","tiktok","clean","tikto
 TIKTOK_DATASET_TEXT = os.path.join(ROOT_DIR, "data","tiktok","clean","tiktok_dataset_text.csv")
 
 # Models path
-SVM_TFIDF_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","svm","svm_tfidf_pipeline.pkl")
-SVM_BOW_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","svm","svm_bow_pipeline.pkl")
-NB_TFIDF_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","nb","nb_tfidf_pipeline.pkl")
-NB_BOW_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","nb","nb_bow_pipeline.pkl")
+SVM_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","svm_pipeline.pkl")
+NB_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","nb_pipeline.pkl")
 LR_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "lr_pipeline.pkl")
 
 # Metrics Path

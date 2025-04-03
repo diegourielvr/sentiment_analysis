@@ -1,12 +1,10 @@
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from sklearn.linear_model import LogisticRegression, SGDClassifier
-from sklearn.metrics import log_loss
+from sklearn.linear_model import LogisticRegression
 
 from src.trainers.utils import get_metrics
 
 import time
-import numpy as np
 
 def train_lr(
     dataset_train, dataset_val, vec = "tfidf",
@@ -48,7 +46,6 @@ def train_lr(
     # Evaluar modelo
     y_pred = pipeline.predict(x_val)
     
-    title = f"LR_{vec.upper()}_{penalty}_{solver}_{C:.4f}"
     metrics = get_metrics(y_val, y_pred)
     
     metrics['model'] = "LR"

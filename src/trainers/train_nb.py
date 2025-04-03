@@ -21,19 +21,21 @@ def train_nb(
     
     # Dividir datos
     x_train, y_train = dataset_train['text'], dataset_train['polarity']
+
     # Entrenar modelo
-    start = time.perf_counter()
+    start = time.time()
     pipeline.fit(x_train, y_train)
-    end = time.perf_counter()
+    end = time.time()
 
     # Dividir datos
     x_val, y_val = dataset_val['text'], dataset_val['polarity']
+
     # Evaluar modelo
     y_pred = pipeline.predict(x_val)
-    metrics, _ = get_metrics(y_val, y_pred)
+    metrics = get_metrics(y_val, y_pred)
     
-    metrics['model'] = "SVM"
-    metrics['vectorizer'] = vec.upper()
+    metrics['model'] = "NB"
+    metrics['vectorizer'] = vec
     metrics['alpha'] = alpha
     metrics['vocab_size'] = len(pipeline.named_steps['vectorizer'].vocabulary_)
     metrics['train_time'] = end - start

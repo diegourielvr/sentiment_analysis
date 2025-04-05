@@ -43,9 +43,14 @@ SVM_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","svm_
 NB_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","nb_pipeline.pkl")
 LR_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "lr_pipeline.pkl")
 SWEM_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "swem_model.pkl")
+MLP_SWEM_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "mlp_swem_model.pth")
 
 # Metrics Path
 TIKTOK_SVM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_svm_metrics.csv")
 TIKTOK_NB_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_nb_metrics.csv")
 TIKTOK_LR_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_lr_metrics.csv")
 TIKTOK_SWEM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_swem_metrics.csv")
+TIKTOK_MLP_SWEM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_mlp_swem_metrics.csv")
+
+# Loss curves
+MLP_SWEM_LOSS_CURVES_DIR = os.path.join(ROOT_DIR, "results","tiktok","loss_curves", "mlp_swem")

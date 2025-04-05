@@ -15,3 +15,8 @@ __pycache__/
 
 # Archivos recolectados fusionados
 data/raw/scraped_merged/
+
+*.csv
+*.png
+*.pth
+*.pkl

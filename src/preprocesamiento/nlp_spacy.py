@@ -120,7 +120,7 @@ class Tokenizer:
         self.nlp = get_model(lang)
         
     def tokenize(self, text_list: list[str]):
-        docs = self.nlp.pipe(tqdm(text_list))
+        docs = self.nlp.pipe(text_list)
         return list(
             map(
                 lambda doc: [token.text for token in doc], 

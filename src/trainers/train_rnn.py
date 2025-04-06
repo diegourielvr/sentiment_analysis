@@ -85,7 +85,7 @@ def train_rnn(dataset_train, dataset_val, embeddings_path,
     metrics['lr'] = lr 
     metrics['patience'] = early_stopping.get_patience() 
     metrics['min_delta'] = early_stopping.get_min_delta() 
-    metrics['rnn_layers'] = model_args.num_layers
+    metrics['num_layers'] = model_args.num_layers
     metrics['hidden_size'] = model_args.num_layers
     metrics['dropout'] = model_args.dropout
     metrics['epochs'] = epochs

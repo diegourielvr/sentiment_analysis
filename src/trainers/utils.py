@@ -2,55 +2,30 @@ import gensim
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, roc_auc_score
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import ConfusionMatrixDisplay
-from constants.constants_nlp import POLARITY_MAP
+from constants.constants_nlp import POLARITY_MAP, SEED
 
-from constants.constants_tiktok import EMBEDDING_W2V_TIKTOK_SENTENCES_PATH
-from src.preprocesamiento.nlp_spacy import Tokenizer
-
-from multiprocessing import shared_memory
 import matplotlib.pyplot as plt
 
 import torch
 import joblib
 import os
 
-class MyDataset:
-    def __init__(self, data_array: np.ndarray, num_workers=0):
-        """
-        Convertir dataframe a una matriz de numpy con
-        df.to_numpy() -> [["", 1], ["", 2]] 
-        x mlp: (batch_size, dim_embeddings) | rnn,lstm: (batch_size, seq_length, dim_embeddings)
-        y (batch_size)
-        
-        """
-        self.num_workers = num_workers
-        if self.num_workers > 0:
-            self.shared_mem = shared_memory.SharedMemory(
-                create=True, size=data_array.nbytes
-            )
-            self.data = np.ndarray(
-                data_array.shape, dtype=data_array.dtype, buffer=self.shared_mem.buf
-            )
-            np.copyto(self.data, data_array)
-        else:
-            self.data = data_array
+class CustomDataset:
+    def __init__(self, embeddings: list[np.ndarray], labels: list[int]):
+        self.embeddings = embeddings
+        self.labels = labels
 
     def __len__(self):
-        return len(self.data)
+        return len(self.embeddings)
 
     def __getitem__(self, idx):
-        x = self.data[idx, :-1] # todas las columnas menos la última
-        y = self.data[idx, -1] # La última columna
+        x = self.embeddings[idx]
+        y = self.labels[idx]
         return x, y
 
-    def __del__(self):
-        if self.num_workers > 0:
-            self.shared_mem.close()
-            self.shared_mem.unlink()
-        
 def aver_pooling(embeddings: np.array, embeddings_dim):
     if not embeddings is None:
         return np.mean(embeddings, axis=0)
@@ -164,19 +139,16 @@ def save_metrics(metrics, path: str):
     row = pd.DataFrame([metrics])
     row.to_csv(path, index=False, mode="a", header=not os.path.exists(path))
 
-def save_model_mlp(model, path):
+def save_model_torch(model, path):
     torch.save(model.state_dict(), path)
     print(f"Modelo guardado en: {path}")
 
-def load_model_mlp(model, path):
+def load_model_torch(model, path):
     """
     model = MLPModelCustom()
     """
     print(f"Cargando modelo: {path}")
     model.load_state_dict(torch.load(path))
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # print(f"Device: {device}")
-    # model.to(device)
     model.eval()  # Inferencia
     return model
 
@@ -222,10 +194,10 @@ class SVMModelArgs:
 
 class ModelArgs:
     input_size: int
-    hidden_size: int
-    hidden_layers: int
+    hidden_size: int # rnn
+    num_layers: int = 1 # rnn
+    hidden_layers: list # mlp
     output_size: int
-    num_layers: int = 1
     nonlinearity: str = 'tanh' # 'tanh' | 'relu'
     dropout:int = 0
 
@@ -269,40 +241,24 @@ class EarlyStopping:
                 return True
         return False
 
-class SentimentAnalysis:
-    def __init__(self, base_model, device=None, pooling="aver"):
-        self.model = base_model # MLPModelCustom()
-        self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model.to(self.device)
-        self.model.eval() # Desactiva Dropout
-        self.tokenizer = Tokenizer()
-        self.embedding_model = EmbeddingLoader(f"{EMBEDDING_W2V_TIKTOK_SENTENCES_PATH}.bin")
-        self.pooling=pooling
-    
-    def predict(self, x: str):
-        x_tokenized = self.tokenizer.tokenize([x]) # list[list[str]
-        x_embeddings = self.embedding_model.get_embeddings(x_tokenized)
-        x_pooling = apply_pooling(x_embeddings, self.embedding_model.vector_size(), self.pooling)
-        x_tensor = torch.tensor(np.array(x_pooling), dtype=torch.float32)
-        
-        with torch.torch.no_grad(): # no calcular gradiente
-            x_tensor = x_tensor.to(self.device)
-            output = self.model(x_tensor) # (batch_size, output_size)
-            pred = torch.nn.functional.softmax(output, dim=1).squeeze()
-            res = list(zip(list(POLARITY_MAP.keys()), pred.tolist()))
-            
-            return sorted(res, key=lambda x: x[1], reverse=True)
-
-def create_dataloder_from_embeddings(embeddings, y, batch_size, collate_fn, num_workers=0, pin_memory=False):
-    data_array = np.hstack([embeddings, y])
-
-    dataset = MyDataset(data_array, num_workers)
+def create_dataloder_from_embeddings(embeddings, labels, batch_size, custom_collate_fn):
+    dataset = CustomDataset(embeddings, labels)
     dataloader = torch.utils.data.DataLoader(
         dataset=dataset,
         batch_size=batch_size,
         shuffle=True,
-        collate_fn=collate_fn,
-        num_workers=num_workers,
-        pin_memory=pin_memory
+        collate_fn=custom_collate_fn,
+        generator=torch.Generator().manual_seed(SEED)
     )
     return dataloader
+
+import random
+
+def set_seed():
+    seed = SEED
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True  # Hace que cuDNN use algoritmos deterministas
+    torch.backends.cudnn.benchmark = False     # Desactiva la búsqueda automática de algoritmos

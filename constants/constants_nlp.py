@@ -30,3 +30,5 @@ INDEX_TO_POLARITY = {
     1: "NEU",
     2: "POS"
 }
+
+SEED = 42

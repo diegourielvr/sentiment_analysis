@@ -2,7 +2,8 @@ import torch
 import time
 import numpy as np
 from tqdm import tqdm
-from src.trainers.utils import EmbeddingLoader, create_dataloder_from_embeddings, get_metrics, show_confusion_matrix, apply_pooling
+from constants.constants_nlp import POLARITY_MAP
+from src.trainers.utils import EmbeddingLoader, ModelArgs, create_dataloder_from_embeddings, get_metrics, show_confusion_matrix, apply_pooling
 
 def collate_fn(batch):
     x_batch, y_batch = zip(*batch)  # Separar x e y
@@ -10,65 +11,29 @@ def collate_fn(batch):
     y_batch = torch.tensor(np.array(y_batch), dtype=torch.long)
     return x_batch, y_batch
 
-def collate_fn_rnn(batch):
-    x_batch, y_batch = zip(*batch)  # Separar x e y
-
-    # Convertir a tensores
-    x_batch_tensor = torch.tensor(np.array(x_batch), dtype=torch.float32)
-    y_batch_tensor = torch.tensor(np.array(y_batch), dtype=torch.long)
-    
-    # Obtener longitudes de cada ejemplo
-    lengths = torch.tensor([len(seq) for seq in x_batch_tensor])
-
-    # Agregar padding
-    x_batch_padded = torch.nn.utils.rnn.pad_sequence(
-        x_batch_tensor,
-        batch_first=True,
-        padding_value=0
-    ) # (batch_size, sequence_length, embedding_dim)
-    
-    return x_batch_padded, lengths, y_batch_tensor
-        
-class MLPModel(torch.nn.Module):
-    def __init__ (self, input_size, hidden_size, output_size):
-        super().__init__()
-        self.h1 = torch.nn.Linear(input_size, hidden_size)
-        self.relu = torch.nn.ReLU()
-        self.h2 = torch.nn.Linear(hidden_size, output_size)
-
-    def forward(self, x):
-        h = self.h1(x)
-        a = self.relu(h)
-        return self.h2(a)
-
 class MLPModelCustom(torch.nn.Module):
-    def __init__ (self, input_size, hidden_layers, output_size, dropout=0.5):
+    def __init__ (self, model_args: ModelArgs):
         super().__init__()
         layers = []
-        previous_dim = input_size
-        for hidden_dim in hidden_layers:
+        previous_dim = model_args.input_size
+        for hidden_dim in model_args.hidden_layers:
             layers.append(torch.nn.Linear(previous_dim, hidden_dim))
             layers.append(torch.nn.ReLU())
-            layers.append(torch.nn.Dropout(dropout))
+            layers.append(torch.nn.Dropout(model_args.dropout))
             previous_dim = hidden_dim
-        layers.append(torch.nn.Linear(previous_dim, output_size))
+        layers.append(torch.nn.Linear(previous_dim, model_args.output_size))
         self.network = torch.nn.Sequential(*layers)
 
     def forward(self, x):
         return self.network(x)
     
-class MLP:
-    def __init__(self, model_args, lr=0.001, optim="adam"):
+class Trainer:
+    def __init__(self, model, lr=0.001, optim="adam"):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Device: {self.device}")
         
         # self.model = MLPModel(model_args.input_size, model_args.hidden_size, model_args.output_size)
-        self.model = MLPModelCustom(
-            model_args.input_size,
-            model_args.hidden_layers,
-            model_args.output_size,
-            model_args.dropout
-        )
+        self.model = model
         self.cost_function = torch.nn.CrossEntropyLoss()
         self.optimizer = None
         if optim.lower() == "adam":
@@ -138,7 +103,6 @@ class MLP:
             if early_stopping(val_loss):
                 return train_losses, val_losses
 
-            # print(f"Época {epoch+1}: Pérdida Entrenamiento = {train_loss:.4f}, Pérdida Validación = {val_loss:.4f}")
         return train_losses, val_losses
 
     def predict(self, dataloader):
@@ -159,10 +123,10 @@ class MLP:
     def get_model(self):
         return self.model
 
-def train_swem_mlp(
+def train_mlp(
     dataset_train, dataset_val, embeddings_path,
     model_args, early_stopping, batch_size=64, lr=0.001,
-    epochs=50, optim="adam", pooling="aver", num_workers=0, pin_memory=False):
+    epochs=50, optim="adam", pooling="aver"):
 
     # Dividir información
     x_train_tokenized, y_train = dataset_train['tokens'], dataset_train['polarity']
@@ -181,21 +145,22 @@ def train_swem_mlp(
     
     # Crear datasets y dataloaders
     dataloader_train = create_dataloder_from_embeddings(
-        x_train_pooling, y_train,batch_size,
-        collate_fn, num_workers, pin_memory
+        x_train_pooling, y_train,batch_size, collate_fn
     )
     dataloader_val = create_dataloder_from_embeddings(
-        x_val_pooling,y_val, batch_size,
-        collate_fn, num_workers, pin_memory
+        x_val_pooling,y_val, batch_size, collate_fn
     )
 
-    classifier_model = MLP(model_args, lr, optim)
+    model = MLPModelCustom(model_args)
+    trainer = Trainer(model, lr, optim)
+
     start = time.time()
-    train_losses, val_losses = classifier_model.fit(dataloader_train, dataloader_val,early_stopping, epochs)
+    train_losses, val_losses = trainer.fit(dataloader_train, dataloader_val, early_stopping, epochs)
     end = time.time()
+    print(f"Pérdida Entrenamiento = {train_losses[-1]:.4f}, Pérdida Validación = {val_losses[-1]:.4f}")
     
     # Evaluar modelo
-    y_pred = classifier_model.predict(dataloader_val)
+    y_pred = trainer.predict(dataloader_val)
     metrics = get_metrics(y_val, y_pred)
 
     metrics['model'] = "MLP SWEM"
@@ -212,9 +177,9 @@ def train_swem_mlp(
     metrics['embedding_dim'] = embedding_model.vector_size()
     metrics['train_time'] = end - start
 
-    return classifier_model, metrics, train_losses, val_losses
+    return trainer, metrics, train_losses, val_losses
 
-def evaluate_model(model, dataset, title, embeddings_path, pooling="aver", batch_size=64, num_workers=0, pin_memory=False):
+def evaluate_model(model, dataset, title, embeddings_path, pooling="aver", batch_size=64):
     x_tokenized, y_true = dataset['tokens'], dataset['polarity']
 
     embedding_model = EmbeddingLoader(f"{embeddings_path}.bin")
@@ -222,8 +187,7 @@ def evaluate_model(model, dataset, title, embeddings_path, pooling="aver", batch
     x_pooling = apply_pooling(embeddings, embedding_model.vector_size(), pooling)
 
     dataloader= create_dataloder_from_embeddings(
-        x_pooling, y_true, batch_size, 
-        collate_fn, num_workers, pin_memory
+        x_pooling, y_true, batch_size, collate_fn
     )
 
     y_pred = model.predict(dataloader)
@@ -231,3 +195,27 @@ def evaluate_model(model, dataset, title, embeddings_path, pooling="aver", batch
     metrics = get_metrics(y_true, y_pred)
     show_confusion_matrix(y_pred, y_true, title)
     return metrics
+
+class SentimentAnalysis:
+    def __init__(self, base_model, embeddings_path, tokenizer, device=None, pooling="aver"):
+        self.model = base_model # MLPModelCustom()
+        self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)
+        self.model.eval() # Desactiva Dropout
+        self.tokenizer = tokenizer
+        self.embedding_model = EmbeddingLoader(f"{embeddings_path}.bin")
+        self.pooling=pooling
+    
+    def predict(self, x: str):
+        x_tokenized = self.tokenizer.tokenize([x]) # list[list[str]
+        x_embeddings = self.embedding_model.get_embeddings(x_tokenized)
+        x_pooling = apply_pooling(x_embeddings, self.embedding_model.vector_size(), self.pooling)
+        x_tensor = torch.tensor(np.array(x_pooling), dtype=torch.float32)
+        
+        with torch.torch.no_grad(): # no calcular gradiente
+            x_tensor = x_tensor.to(self.device)
+            output = self.model(x_tensor) # (batch_size, output_size)
+            pred = torch.nn.functional.softmax(output, dim=1).squeeze()
+            res = list(zip(list(POLARITY_MAP.keys()), pred.tolist()))
+            
+            return sorted(res, key=lambda x: x[1], reverse=True)

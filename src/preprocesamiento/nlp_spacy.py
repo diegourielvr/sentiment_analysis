@@ -119,7 +119,9 @@ class Tokenizer:
     def __init__(self, lang: str="es"):
         self.nlp = get_model(lang)
         
-    def tokenize(self, text_list: list[str]):
+    def tokenize(self, text_list: list[str], progress=False):
+        if progress:
+            text_list = tqdm(text_list)
         docs = self.nlp.pipe(text_list)
         return list(
             map(

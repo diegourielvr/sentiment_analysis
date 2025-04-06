@@ -3,6 +3,7 @@ import unicodedata
 import emoji
 import pandas as pd 
 
+from bs4 import BeautifulSoup
 from src.preprocesamiento.spell import spell
 
 # from src.preprocesamiento.spell import spell
@@ -81,8 +82,17 @@ def drop_blank_or_nan_or_duplicated(df, col):
     new_df = df[~df[col].str.match(r'^\s*$') & df[col].notna()]
     return new_df.drop_duplicates(subset=col, keep='first').reset_index(drop=True)
 
+def drop_blank_or_nan(df, col):
+    """Eliminar filas con cadenas vacías, espacios, tabulaciones o NA
+    """
+
+    new_df = df[~df[col].str.match(r'^\s*$') & df[col].notna()]
+    return new_df.reset_index(drop=True)
+
 def remove_html(text: str):
-    clean_text = re.sub(r'<[^>]+>', '', text)
+    # clean_text = re.sub(r'<[^>]+>', '', text)
+    soup = BeautifulSoup(text, 'html.parser')
+    clean_text = soup.get_text() # Extraer texto de código html
     return clean_text
 
 def remove_punctuation(text: str):
@@ -98,12 +108,16 @@ def clean_text(text: str, lang="es"):
     """
     # Convertir a minúsculas
     text = text.lower()
+    # Reemplazar &nbsp; por espacios regulares
+    text = replace_nbsp(text)
+    ## Convertir comillas dobles a comilla simple
+    text = replace_quotes(text)
+    # Eliminar etiquetas html
+    text = remove_html(text)
     # Normalizar texto en negritas, italicas, etc
     text = normalize_text(text)
     # Reemplazar urls
     text = replace_url(text, " ")
-    # Eliminar etiquetas html
-    text = remove_html(text)
     # Eliminar signos de puntuación
     text = remove_punctuation(text)
     # Filtrar palabras con letras del español (elimina, emojis, símbolos espaciales, etc)

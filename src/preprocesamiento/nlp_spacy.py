@@ -82,7 +82,7 @@ def get_no_stopwords_pipe(documentos: list[str], sep = ' ', lang: str="es"):
         docs_no_stopwords.append(sep.join(no_stopwords))
     return docs_no_stopwords
 
-def preprocesamiento(documentos: list[str], stemming=True, lang="es") -> list[str]:
+def preprocesamiento(documentos: list[str], stemming=True, lang="es", progress=False) -> list[str]:
     """Procesamiento de lenguaje natural del texto.
     Tokenizar, eliminar signos de puntuacion, stopwords y lematizar.
 
@@ -96,8 +96,11 @@ def preprocesamiento(documentos: list[str], stemming=True, lang="es") -> list[st
     nlp = get_model(lang)
 
     documentos_preprocesados = []
-    docs = nlp.pipe(tqdm(documentos))
-    for doc in tqdm(docs): # procesamiento de documentos
+    
+    if progress: documentos = tqdm(documentos, leave=True, desc="nlp.pipe")
+    docs = nlp.pipe(documentos)
+    
+    for doc in docs: # procesamiento de documentos
         doc_preprocesado = []
         for token in doc:
             # filtrar lemas de palabras que no sean stopwords o signos de puntuacion

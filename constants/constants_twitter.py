@@ -9,6 +9,8 @@ TWITTER_VAL_RAW_PATH = os.path.join(ROOT_DIR, "data", "twitter", "raw", "twitter
 TWITTER_DATASET_TRAIN_PATH = os.path.join(ROOT_DIR, "data","twitter","clean","twitter_dataset_train.csv")
 TWITTER_DATASET_VAL_PATH = os.path.join(ROOT_DIR, "data","twitter","clean","twitter_dataset_val.csv")
 
+# Modelos de W2V
+EMBEDDING_W2V_TWITTER_PATH = os.path.join(ROOT_DIR, "models", "twitter", "embeddings", "w2v_embeddings_twitter")
 
 # Models path
 SVM_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers","svm_pipeline.pkl")

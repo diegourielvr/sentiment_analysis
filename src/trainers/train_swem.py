@@ -56,7 +56,7 @@ def train_swem(
     metrics['regularization'] = model_args.C
     metrics['max_iter'] = model_args.max_iter if hasattr(model_args, "max_iter") else None
     metrics['solver'] = model_args.solver if hasattr(model_args, "solver") else None
-    metrics['embedding_dim'] = embedding_model.vector_size
+    metrics['embedding_dim'] = embedding_model.vector_size()
     metrics['train_time'] = end - start
 
     return classifier_model, metrics

@@ -20,3 +20,5 @@ data/raw/scraped_merged/
 *.png
 *.pth
 *.pkl
+*.bin
+*.model

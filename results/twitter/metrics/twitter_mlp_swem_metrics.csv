@@ -1,0 +1,2 @@
+accuracy,recall,precision,f1_score,model,pooling,optim,lr,patience,min_delta,hidden_layers,output_size,dropout,epochs,batch_size,embedding_dim,train_time
+0.759134723156243,0.7588962130308633,0.7608397908869501,0.7578397971458611,MLP SWEM,aver,adam,0.01,15,0.0001,"[128, 64]",3,0.2,100,64,100,66.27411532402039

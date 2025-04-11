@@ -1,0 +1,2 @@
+accuracy,recall,precision,f1_score,model,optim,lr,patience,min_delta,num_layers,hidden_size,dropout,epochs,batch_size,embedding_dim,train_time
+0.7313727425244252,0.33319845337649495,0.24386311286607434,0.2816157470740234,LSTM,adam,0.1,15,0.0001,2,128,0.2,100,64,100,263.97378039360046

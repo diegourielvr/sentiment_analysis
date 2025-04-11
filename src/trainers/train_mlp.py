@@ -3,6 +3,7 @@ import time
 import numpy as np
 from tqdm import tqdm
 from constants.constants_nlp import POLARITY_MAP
+from sklearn.utils.class_weight import compute_class_weight
 from src.trainers.utils import EmbeddingLoader, ModelArgs, create_dataloder_from_embeddings, get_metrics, show_confusion_matrix, apply_pooling
 
 def collate_fn(batch):
@@ -28,13 +29,15 @@ class MLPModelCustom(torch.nn.Module):
         return self.network(x)
     
 class Trainer:
-    def __init__(self, model, lr=0.001, optim="adam"):
+    def __init__(self, model, lr=0.001, optim="adam", class_weights=None):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Device: {self.device}")
         
         # self.model = MLPModel(model_args.input_size, model_args.hidden_size, model_args.output_size)
         self.model = model
-        self.cost_function = torch.nn.CrossEntropyLoss()
+        if not class_weights is None:
+            class_weights = class_weights.to(self.device)
+        self.cost_function = torch.nn.CrossEntropyLoss(weight=class_weights)
         self.optimizer = None
         if optim.lower() == "adam":
             self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
@@ -65,7 +68,7 @@ class Trainer:
                 output = self.model(batch_x)
                 loss = self.cost_function(output, batch_y)
 
-                # Backward propaghation
+                # Backward propagation
                 self.optimizer.zero_grad() # Reiniciar gradientes en cero
                 loss.backward() # Calcular gradientes
                 self.optimizer.step()# Actualizar parámetros
@@ -126,7 +129,7 @@ class Trainer:
 def train_mlp(
     dataset_train, dataset_val, embeddings_path,
     model_args, early_stopping, batch_size=64, lr=0.001,
-    epochs=50, optim="adam", pooling="aver"):
+    epochs=50, optim="adam", pooling="aver", use_class_weights=False):
 
     # Dividir información
     x_train_tokenized, y_train = dataset_train['tokens'], dataset_train['polarity']
@@ -145,14 +148,23 @@ def train_mlp(
     
     # Crear datasets y dataloaders
     dataloader_train = create_dataloder_from_embeddings(
-        x_train_pooling, y_train,batch_size, collate_fn
+        x_train_pooling, y_train,batch_size, collate_fn, shuffle=True
     )
     dataloader_val = create_dataloder_from_embeddings(
-        x_val_pooling,y_val, batch_size, collate_fn
+        x_val_pooling,y_val, batch_size, collate_fn, shuffle=False
     )
 
     model = MLPModelCustom(model_args)
-    trainer = Trainer(model, lr, optim)
+    class_weights = None
+    if use_class_weights is True:
+        class_weights = compute_class_weight(
+            class_weight='balanced',
+            classes=np.unique(y_train),
+            y=y_train
+        )
+        class_weights = torch.tensor(class_weights, dtype=torch.float)
+
+    trainer = Trainer(model, lr, optim, class_weights)
 
     start = time.time()
     train_losses, val_losses = trainer.fit(dataloader_train, dataloader_val, early_stopping, epochs)
@@ -186,11 +198,25 @@ def evaluate_model(model, dataset, title, embeddings_path, pooling="aver", batch
     embeddings = embedding_model.get_embeddings(x_tokenized)
     x_pooling = apply_pooling(embeddings, embedding_model.vector_size(), pooling)
 
-    dataloader= create_dataloder_from_embeddings(
-        x_pooling, y_true, batch_size, collate_fn
+    dataloader = create_dataloder_from_embeddings(
+        x_pooling, y_true, batch_size, collate_fn, shuffle=False
     )
 
-    y_pred = model.predict(dataloader)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    model.eval() # Desactivar dropout
+    with torch.torch.no_grad(): # no calcular gradiente
+        predictions = []
+        for batch_x, batch_y in dataloader:
+            # Mover al device disponible
+            batch_x = batch_x.to(device)
+            batch_y = batch_y.to(device)
+
+            # Forward propagation
+            output = model(batch_x) # (batch_size, output_size)
+            preds = torch.argmax(output, dim=1)
+            predictions.extend(preds.cpu().numpy())
+    y_pred = np.array(predictions)   
     
     metrics = get_metrics(y_true, y_pred)
     show_confusion_matrix(y_pred, y_true, title)

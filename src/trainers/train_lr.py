@@ -14,6 +14,7 @@ def train_lr(
     """
     C >= 0
     solver 'lbfgs' | 'saga'
+    class_weight='balanced' | None
     """
 
     vectorizer = None

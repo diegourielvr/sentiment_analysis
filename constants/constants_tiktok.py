@@ -18,7 +18,6 @@ YDL_OPTS = {
     'outtmpl': f'{TIKTOK_DOWNLOAD_VIDEO_DIR}/%(id)s.%(ext)s' # Formato de archivos descargados 
 }
 
-
 # -- RUTAS DE LIMPIEZA
 TIKTOK_PRE_TRANSLATED_SENTENCES = os.path.join(ROOT_DIR, 'data','tiktok', 'raw','tiktok_pre_translated_sentences.csv')
 TIKTOK_PRE_TRANSLATED_ONLY_SENTENCES = os.path.join(ROOT_DIR, 'data','tiktok', 'raw','tiktok_pre_translated_only_sentences')

@@ -267,12 +267,12 @@ class EarlyStopping:
                 return True
         return False
 
-def create_dataloder_from_embeddings(embeddings, labels, batch_size, custom_collate_fn):
+def create_dataloder_from_embeddings(embeddings, labels, batch_size, custom_collate_fn, shuffle=True):
     dataset = CustomDataset(embeddings, labels)
     dataloader = torch.utils.data.DataLoader(
         dataset=dataset,
         batch_size=batch_size,
-        shuffle=True,
+        shuffle=shuffle,
         collate_fn=custom_collate_fn,
         generator=torch.Generator().manual_seed(SEED)
     )

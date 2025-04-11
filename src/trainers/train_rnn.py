@@ -2,6 +2,7 @@ import torch
 import time
 import numpy as np
 from constants.constants_nlp import POLARITY_MAP
+from sklearn.utils.class_weight import compute_class_weight
 from src.trainers.trainer_rnn import TrainerRNN, collate_fn_rnn
 from src.trainers.utils import ModelArgs, EmbeddingLoader, create_dataloder_from_embeddings, get_metrics
 
@@ -45,7 +46,7 @@ class RNNModel(torch.nn.Module):
 
 def train_rnn(dataset_train, dataset_val, embeddings_path,
                     model_args, early_stopping, batch_size=64,
-                    lr=1e-3, epochs=50, optim="adam"):
+                    lr=1e-3, epochs=50, optim="adam", use_class_weights=False):
     # Dividir información
     x_train_tokenized, y_train = dataset_train['tokens'], dataset_train['polarity']
     x_val_tokenized, y_val = dataset_val['tokens'], dataset_val['polarity']
@@ -58,14 +59,22 @@ def train_rnn(dataset_train, dataset_val, embeddings_path,
     x_val_embeddings = embedding_model.get_embeddings(x_val_tokenized)
 
     dataloader_train = create_dataloder_from_embeddings(
-        x_train_embeddings, y_train, batch_size, collate_fn_rnn
+        x_train_embeddings, y_train, batch_size, collate_fn_rnn, shuffle=True
     )
     dataloader_val = create_dataloder_from_embeddings(
-        x_val_embeddings, y_val, batch_size, collate_fn_rnn,
+        x_val_embeddings, y_val, batch_size, collate_fn_rnn, shuffle=False
     )
 
     model = RNNModel(model_args)
-    trainer = TrainerRNN(model, lr, optim)
+    class_weights = None
+    if use_class_weights is True:
+        class_weights = compute_class_weight(
+            class_weight='balanced',
+            classes=np.unique(y_train),
+            y=y_train
+        )
+        class_weights = torch.tensor(class_weights, dtype=torch.float)
+    trainer = TrainerRNN(model, lr, optim, class_weights)
 
     # Enrtenar modelo
     start = time.time()
@@ -86,7 +95,7 @@ def train_rnn(dataset_train, dataset_val, embeddings_path,
     metrics['patience'] = early_stopping.get_patience() 
     metrics['min_delta'] = early_stopping.get_min_delta() 
     metrics['num_layers'] = model_args.num_layers
-    metrics['hidden_size'] = model_args.num_layers
+    metrics['hidden_size'] = model_args.hidden_size
     metrics['dropout'] = model_args.dropout
     metrics['epochs'] = epochs
     metrics['batch_size'] = batch_size

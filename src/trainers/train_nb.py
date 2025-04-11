@@ -9,6 +9,10 @@ import time
 def train_nb(
     dataset_train, dataset_val,
     alpha: float = 1, vec: str = "tfidf"):
+    """
+    alpha: un valor alto indica que las características no conocidas toman una probabilidad alta.
+    por el contrario, un valor pequeño asigna probabilidades pequeñas a caracteristicas no conocidas
+    """
 
     vectorizer = None
     if vec.lower() == "tfidf": vectorizer = TfidfVectorizer()

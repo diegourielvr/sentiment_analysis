@@ -9,11 +9,11 @@ import time
 def train_lr(
     dataset_train, dataset_val, vec = "tfidf",
     penalty = "l2", C = 1, solver = "lbfgs",
-    max_iter=100):
+    max_iter=100, classs_weight=None):
 
     """
-    C float >= 0
-    solver 'lbfgs', 'newton-cg', 'sag', 'saga'
+    C >= 0
+    solver 'lbfgs' | 'saga'
     """
 
     vectorizer = None
@@ -23,12 +23,12 @@ def train_lr(
     pipeline = Pipeline([
         ("vectorizer", vectorizer),
         ("lr", LogisticRegression(
-            penalty=penalty,
-            C=C,
+            penalty=penalty, C=C,
             max_iter=max_iter,
             multi_class="multinomial", # n_classes >= 3 
             solver=solver,
-            random_state=42
+            random_state=42,
+            class_weight=classs_weight
         ))
     ])
         

@@ -1,7 +1,6 @@
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.svm import SVC
-
 from src.trainers.utils import get_metrics
 
 import time
@@ -9,7 +8,17 @@ import time
 def train_svm(
     dataset_train, dataset_val,
     C: float = 1.0, kernel: str = "linear",
-    vec: str = "tfidf"):
+    vec: str = "tfidf", class_weight=None):
+    """
+    Valores pequeños de C penalizan poco el error y da un mayor margen
+    Valores grandes de C dan mayor penalización al error y da un menor margen
+
+    Escoger kernel 'linear' si los datos son linealmente separables,
+    si no lo son, entonces usar 'rbf'.
+    
+    class_weight=None si todas las clases tiene le mismo peso
+    class_weight='balanced' para compenzar las clases con pocos ejemplos
+    """
 
     vectorizer = None
     if vec.lower() == "tfidf": vectorizer = TfidfVectorizer()
@@ -17,7 +26,7 @@ def train_svm(
         
     pipeline = Pipeline([
         ("vectorizer", vectorizer),
-        ("svm", SVC(kernel=kernel, C=C))
+        ("svm", SVC(kernel=kernel, C=C, class_weight=class_weight))
     ])
     
     # Dividir datos

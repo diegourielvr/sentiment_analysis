@@ -47,6 +47,7 @@ RNN_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "rnn_mo
 LSTM_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "lstm_model.pth")
 
 # Metrics Path
+TIKTOK_METRICS_DIR = os.path.join(ROOT_DIR, "results","tiktok","metrics")
 TIKTOK_SVM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_svm_metrics.csv")
 TIKTOK_NB_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_nb_metrics.csv")
 TIKTOK_LR_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_lr_metrics.csv")

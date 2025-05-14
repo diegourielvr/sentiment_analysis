@@ -22,6 +22,7 @@ RNN_MODEL_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers", "rnn_m
 LSTM_MODEL_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers", "lstm_model.pth")
 
 # Metrics Path
+TWITTER_METRICS_DIR = os.path.join(ROOT_DIR, "results","twitter","metrics")
 TWITTER_SVM_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_svm_metrics.csv")
 TWITTER_NB_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_nb_metrics.csv")
 TWITTER_LR_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_lr_metrics.csv")

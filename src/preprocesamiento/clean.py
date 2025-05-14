@@ -1,13 +1,9 @@
 import re
 import unicodedata
 import emoji
-import pandas as pd 
 
 from bs4 import BeautifulSoup
 from src.preprocesamiento.spell import spell
-
-# from src.preprocesamiento.spell import spell
-# from src.nlp.nlp_spacy import get_no_stopwords
 
 def replace_nbsp(texto: str):
     """Reemplazar el símbolo &nbsp; por un espacio regular

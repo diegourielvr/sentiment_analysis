@@ -13,23 +13,12 @@ TWITTER_DATASET_VAL_PATH = os.path.join(ROOT_DIR, "data","twitter","clean","twit
 EMBEDDING_W2V_TWITTER_PATH = os.path.join(ROOT_DIR, "models", "twitter", "embeddings", "w2v_embeddings_twitter")
 
 # Models path
-SVM_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers","svm_pipeline.pkl")
-NB_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers","nb_pipeline.pkl")
-LR_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers", "lr_pipeline.pkl")
-SWEM_MODEL_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers", "swem_model.pkl")
-MLP_SWEM_MODEL_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers", "mlp_swem_model.pth")
-RNN_MODEL_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers", "rnn_model.pth")
-LSTM_MODEL_PATH = os.path.join(ROOT_DIR, "models","twitter","classifiers", "lstm_model.pth")
+MODELS_DIR = os.path.join(ROOT_DIR, "models", "twitter", "classifiers")
+SVM_MODEL_DIR = os.path.join(MODELS_DIR, "svm")
 
 # Metrics Path
-TWITTER_METRICS_DIR = os.path.join(ROOT_DIR, "results","twitter","metrics")
-TWITTER_SVM_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_svm_metrics.csv")
-TWITTER_NB_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_nb_metrics.csv")
-TWITTER_LR_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_lr_metrics.csv")
-TWITTER_SWEM_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_swem_metrics.csv")
-TWITTER_MLP_SWEM_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_mlp_swem_metrics.csv")
-TWITTER_RNN_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_rnn_metrics.csv")
-TWITTER_LSTM_METRICS_PATH = os.path.join(ROOT_DIR, "results","twitter","metrics","twitter_lstm_metrics.csv")
+METRICS_DIR = os.path.join(ROOT_DIR, "results", "twitter", "metrics")
+SVM_METRICS_PATH = os.path.join(METRICS_DIR, "twitter_svm_metrics.csv")
 
 # Loss curves
 MLP_SWEM_LOSS_CURVES_DIR = os.path.join(ROOT_DIR, "results","twitter","loss_curves", "mlp_swem")

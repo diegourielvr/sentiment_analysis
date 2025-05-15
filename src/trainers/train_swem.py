@@ -14,7 +14,7 @@ def train_swem(
     x_val_tokenized, y_val = dataset_val['tokens'], dataset_val['polarity']
 
     # Cargar modelo y obtener embeddings
-    embedding_model = EmbeddingLoader(f"{embeddings_path}.bin")
+    embedding_model = EmbeddingLoader(f"{embeddings_path}.bin", binary=True)
     x_train_embeddings = embedding_model.get_embeddings(x_train_tokenized)
     x_val_embeddings = embedding_model.get_embeddings(x_val_tokenized)
 

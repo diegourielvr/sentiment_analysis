@@ -164,7 +164,7 @@ def evaluate_model(model, dataset, title):
     return metrics
 
 class EmbeddingLoader:
-    def __init__(self, embeddings_path: str, type: str='w2v', binary=False):
+    def __init__(self, embeddings_path: str, type: str='w2v', binary=True):
         self.word_vectors = None
         if type == 'w2v':
             self.word_vectors = gensim.models.KeyedVectors.load_word2vec_format(embeddings_path, binary=binary)

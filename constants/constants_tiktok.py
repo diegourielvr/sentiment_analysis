@@ -40,10 +40,22 @@ EMBEDDING_W2V_TIKTOK_SENTENCES_PATH = os.path.join(ROOT_DIR, "models", "tiktok",
 # Models path
 MODELS_DIR = os.path.join(ROOT_DIR, "models","tiktok","classifiers")
 SVM_MODEL_DIR = os.path.join(MODELS_DIR,"svm")
+NB_MODEL_DIR = os.path.join(MODELS_DIR,"nb")
+LR_MODEL_DIR = os.path.join(MODELS_DIR,"lr")
+SWEM_MODEL_DIR = os.path.join(MODELS_DIR,"swem")
+MLP_MODEL_DIR = os.path.join(MODELS_DIR,"mlp")
+RNN_MODEL_DIR = os.path.join(MODELS_DIR,"rnn")
+LSTM_MODEL_DIR = os.path.join(MODELS_DIR,"lstm")
 
 # Metrics Path
 METRICS_DIR = os.path.join(ROOT_DIR, "results","tiktok","metrics")
 SVM_METRICS_PATH = os.path.join(METRICS_DIR, "tiktok_svm_metrics.csv")
+NB_METRICS_PATH = os.path.join(METRICS_DIR, "tiktok_nb_metrics.csv")
+LR_METRICS_PATH = os.path.join(METRICS_DIR, "tiktok_lr_metrics.csv")
+SWEM_METRICS_PATH = os.path.join(METRICS_DIR, "tiktok_swem_metrics.csv")
+MLP_METRICS_PATH = os.path.join(METRICS_DIR, "tiktok_mlp_metrics.csv")
+RNN_METRICS_PATH = os.path.join(METRICS_DIR, "tiktok_rnn_metrics.csv")
+LSTM_METRICS_PATH = os.path.join(METRICS_DIR, "tiktok_lstm_metrics.csv")
 
 # Loss curves
 MLP_SWEM_LOSS_CURVES_DIR = os.path.join(ROOT_DIR, "results","tiktok","loss_curves", "mlp_swem")

@@ -134,7 +134,6 @@ def build_datasets(
 
 def save_model(model, path):
     joblib.dump(model, path)
-    print(f"Modelo guardado en: {path}")
 
 def load_model(path):
     print(f"Cargando modelo: {path}")

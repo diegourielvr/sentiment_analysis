@@ -38,23 +38,12 @@ TIKTOK_DATASET_TEXT = os.path.join(ROOT_DIR, "data","tiktok","clean","tiktok_dat
 EMBEDDING_W2V_TIKTOK_SENTENCES_PATH = os.path.join(ROOT_DIR, "models", "tiktok", "embeddings", "w2v_embeddings_tiktok_sentences")
 
 # Models path
-SVM_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","svm_pipeline.pkl")
-NB_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers","nb_pipeline.pkl")
-LR_PIPELINE_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "lr_pipeline.pkl")
-SWEM_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "swem_model.pkl")
-MLP_SWEM_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "mlp_swem_model.pth")
-RNN_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "rnn_model.pth")
-LSTM_MODEL_PATH = os.path.join(ROOT_DIR, "models","tiktok","classifiers", "lstm_model.pth")
+MODELS_DIR = os.path.join(ROOT_DIR, "models","tiktok","classifiers")
+SVM_MODEL_DIR = os.path.join(MODELS_DIR,"svm")
 
 # Metrics Path
-TIKTOK_METRICS_DIR = os.path.join(ROOT_DIR, "results","tiktok","metrics")
-TIKTOK_SVM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_svm_metrics.csv")
-TIKTOK_NB_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_nb_metrics.csv")
-TIKTOK_LR_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_lr_metrics.csv")
-TIKTOK_SWEM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_swem_metrics.csv")
-TIKTOK_MLP_SWEM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_mlp_swem_metrics.csv")
-TIKTOK_RNN_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_rnn_metrics.csv")
-TIKTOK_LSTM_METRICS_PATH = os.path.join(ROOT_DIR, "results","tiktok","metrics","tiktok_lstm_metrics.csv")
+METRICS_DIR = os.path.join(ROOT_DIR, "results","tiktok","metrics")
+SVM_METRICS_PATH = os.path.join(METRICS_DIR, "tiktok_svm_metrics.csv")
 
 # Loss curves
 MLP_SWEM_LOSS_CURVES_DIR = os.path.join(ROOT_DIR, "results","tiktok","loss_curves", "mlp_swem")

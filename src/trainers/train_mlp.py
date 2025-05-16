@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from constants.constants_nlp import POLARITY_MAP
 from sklearn.utils.class_weight import compute_class_weight
-from src.trainers.utils import EmbeddingLoader, ModelArgs, create_dataloder_from_embeddings, get_metrics, show_confusion_matrix, apply_pooling
+from src.trainers.utils import EmbeddingLoader, create_dataloder_from_embeddings, get_metrics, show_confusion_matrix, apply_pooling
 
 def collate_fn(batch):
     x_batch, y_batch = zip(*batch)  # Separar x e y
@@ -13,16 +13,16 @@ def collate_fn(batch):
     return x_batch, y_batch
 
 class MLPModelCustom(torch.nn.Module):
-    def __init__ (self, model_args: ModelArgs):
+    def __init__ (self, input_size, hidden_layers, output_size, dropout):
         super().__init__()
         layers = []
-        previous_dim = model_args.input_size
-        for hidden_dim in model_args.hidden_layers:
+        previous_dim = input_size
+        for hidden_dim in hidden_layers:
             layers.append(torch.nn.Linear(previous_dim, hidden_dim))
             layers.append(torch.nn.ReLU())
-            layers.append(torch.nn.Dropout(model_args.dropout))
+            layers.append(torch.nn.Dropout(dropout))
             previous_dim = hidden_dim
-        layers.append(torch.nn.Linear(previous_dim, model_args.output_size))
+        layers.append(torch.nn.Linear(previous_dim, output_size))
         self.network = torch.nn.Sequential(*layers)
 
     def forward(self, x):
@@ -55,7 +55,6 @@ class Trainer:
         for epoch in progress_bar:
             self.model.train() # Modo de entrenamiento
 
-            # progress_bar = tqdm(dataloader_train, desc=f"Época {epoch+1}/{epochs}", leave=True)
             train_loss = 0
             num_train_samples = 0
             
@@ -101,7 +100,7 @@ class Trainer:
             val_loss /= num_val_samples
             val_losses.append(val_loss)
 
-            progress_bar.set_postfix(loss=val_loss)
+            progress_bar.set_postfix(train_loss=train_loss, val_loss=val_loss)
             
             if early_stopping(val_loss):
                 return train_losses, val_losses
@@ -137,7 +136,7 @@ def train_mlp(
 
     # Cargar modelo de embeddings
     embedding_model = EmbeddingLoader(f"{embeddings_path}.bin")
-    model_args.input_size = embedding_model.vector_size()
+    model_args['input_size'] = embedding_model.vector_size()
     # Obtener embeddings
     train_embeddings = embedding_model.get_embeddings(x_train_tokenized) # list[ndarray[ndarray[float]]]
     val_embeddings = embedding_model.get_embeddings(x_val_tokenized)
@@ -154,7 +153,7 @@ def train_mlp(
         x_val_pooling,y_val, batch_size, collate_fn, shuffle=False
     )
 
-    model = MLPModelCustom(model_args)
+    model = MLPModelCustom(**model_args)
     class_weights = None
     if use_class_weights is True:
         class_weights = compute_class_weight(
@@ -169,7 +168,6 @@ def train_mlp(
     start = time.time()
     train_losses, val_losses = trainer.fit(dataloader_train, dataloader_val, early_stopping, epochs)
     end = time.time()
-    print(f"Pérdida Entrenamiento = {train_losses[-1]:.4f}, Pérdida Validación = {val_losses[-1]:.4f}")
     
     # Evaluar modelo
     y_pred = trainer.predict(dataloader_val)
@@ -181,10 +179,10 @@ def train_mlp(
     metrics['lr'] = lr 
     metrics['patience'] = early_stopping.get_patience() 
     metrics['min_delta'] = early_stopping.get_min_delta() 
-    metrics['hidden_layers'] = model_args.hidden_layers
-    metrics['output_size'] = model_args.output_size
-    metrics['dropout'] = model_args.dropout
-    metrics['epochs'] = epochs
+    metrics['hidden_layers'] = model_args['hidden_layers']
+    metrics['output_size'] = model_args['output_size']
+    metrics['dropout'] = model_args['dropout']
+    metrics['epochs'] = f"{len(train_losses)}/{epochs}"
     metrics['batch_size'] = batch_size
     metrics['embedding_dim'] = embedding_model.vector_size()
     metrics['train_time'] = end - start

@@ -27,7 +27,6 @@ class TrainerRNN:
         for epoch in progress_bar:
             self.model.train() # Modo de entrenamiento
 
-            # progress_bar = tqdm(dataloader_train, desc=f"Época {epoch+1}/{epochs}", leave=True)
             train_loss = 0
             num_train_samples = 0
             
@@ -35,7 +34,6 @@ class TrainerRNN:
                 # Mover los datos al dispositivo disopnible
                 batch_x = batch_x.to(self.device)
                 batch_y = batch_y.to(self.device)
-                # lengths = lengths.to(self.device)
                 
                 # Forward propagation
                 output = self.model(batch_x, lengths)
@@ -75,7 +73,7 @@ class TrainerRNN:
             val_loss /= num_val_samples
             val_losses.append(val_loss)
 
-            progress_bar.set_postfix(loss=val_loss)
+            progress_bar.set_postfix(train_loss=train_loss, val_loss=val_loss)
             
             if early_stopping(val_loss):
                 return train_losses, val_losses
@@ -120,7 +118,6 @@ def evaluate_model(model, dataset, title, embeddings_path, batch_size=64):
             # Mover al device disponible
             batch_x = batch_x.to(device)
             batch_y = batch_y.to(device)
-            # lengths = lengths.to(device)
 
             # Forward propagation
             output = model(batch_x, lengths) # (batch_size, output_size)

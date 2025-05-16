@@ -143,18 +143,14 @@ def save_metrics(metrics, path: str):
     row = pd.DataFrame([metrics])
     row.to_csv(path, index=False, mode="a", header=not os.path.exists(path))
 
-def save_model_torch(model, path):
-    torch.save(model.state_dict(), path)
-    print(f"Modelo guardado en: {path}")
-
-def load_model_torch(model, path):
-    """
-    model = MLPModelCustom()
-    """
-    print(f"Cargando modelo: {path}")
-    model.load_state_dict(torch.load(path))
-    model.eval()  # Inferencia
-    return model
+def save_model_torch(model, config: dict, hp: dict, path: str):
+    torch.save({
+            'model_state_dict': model.state_dict(),
+            'config': config,
+            'hp': hp
+        },
+        path
+    )
 
 def evaluate_model(model, dataset, title):
     x, y_true = dataset['text'], dataset['polarity']
@@ -205,14 +201,14 @@ class ModelArgs:
     nonlinearity: str = 'tanh' # 'tanh' | 'relu'
     dropout:int = 0
 
-def show_loss_val_curves(train_losses, val_losses, epochs, path:str="", dpi:int=300):
+def show_loss_val_curves(train_losses, val_losses, epochs, title, path, dpi:int=300):
     x = range(1, epochs + 1)
     plt.figure(figsize=(8, 6))
-    plt.plot(x, train_losses, label="Entrenamiento")
-    plt.plot(x, val_losses, label="Validación")
+    plt.plot(x, train_losses, label="Entrenamiento", linestyle="dashed")
+    plt.plot(x, val_losses, label="Validación", linestyle="dashdot")
     plt.xlabel("Época")
     plt.ylabel("Pérdida")
-    plt.title("Evolución de la Pérdida en Entrenamiento y Validación")
+    plt.title(title)
     plt.legend()
     plt.grid()
     if path:

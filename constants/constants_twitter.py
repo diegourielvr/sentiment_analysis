@@ -33,6 +33,6 @@ RNN_METRICS_PATH = os.path.join(METRICS_DIR, "twitter_rnn_metrics.csv")
 LSTM_METRICS_PATH = os.path.join(METRICS_DIR, "twitter_lstm_metrics.csv")
 
 # Loss curves
-MLP_SWEM_LOSS_CURVES_DIR = os.path.join(ROOT_DIR, "results","twitter","loss_curves", "mlp_swem")
+MLP_LOSS_CURVES_DIR = os.path.join(ROOT_DIR, "results","twitter","loss_curves", "mlp")
 RNN_LOSS_CURVES_DIR = os.path.join(ROOT_DIR, "results","twitter","loss_curves", "rnn")
 LSTM_LOSS_CURVES_DIR = os.path.join(ROOT_DIR, "results","twitter","loss_curves", "lstm")

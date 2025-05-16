@@ -4,22 +4,21 @@ import numpy as np
 from constants.constants_nlp import POLARITY_MAP
 from sklearn.utils.class_weight import compute_class_weight
 from src.trainers.trainer_rnn import TrainerRNN, collate_fn_rnn
-from src.trainers.utils import ModelArgs, EmbeddingLoader, create_dataloder_from_embeddings, get_metrics
+from src.trainers.utils import EmbeddingLoader, create_dataloder_from_embeddings, get_metrics
 
 class RNNModel(torch.nn.Module):
-    def __init__(self, model_args: ModelArgs):
+    def __init__(self, input_size, hidden_size, num_layers, output_size, dropout):
         super().__init__()
         self.rnn = torch.nn.RNN(
-            input_size = model_args.input_size, # Número de características por palabra | Tamaño de los embeddings
-            hidden_size = model_args.hidden_size, # Número de características/neuronas de la capa recurrente
-            num_layers = model_args.num_layers, # Núumero de capas recurrentes
-            nonlinearity = model_args.nonlinearity, # 'relu' deafult: 'tanh'
-            dropout = model_args.dropout, # Porcentaje de neuronas desactivadas durante el entrenamiento
+            input_size = input_size, # Número de características por palabra | Tamaño de los embeddings
+            hidden_size = hidden_size, # Número de características/neuronas de la capa recurrente
+            num_layers = num_layers, # Núumero de capas recurrentes
+            dropout = dropout, # Porcentaje de neuronas desactivadas durante el entrenamiento
             batch_first = True # Los tensores de entrada y salida tienen las dimensiones (batch, seq, feature)
         )
         self.fc = torch.nn.Linear(
-            model_args.hidden_size, # Número de características de entrada
-            model_args.output_size # Número de clases
+            hidden_size, # Número de características de entrada
+            output_size # Número de clases
         )
     
     def forward(self, x, lengths):
@@ -53,7 +52,7 @@ def train_rnn(dataset_train, dataset_val, embeddings_path,
 
     # Cargar modelo de embeddings
     embedding_model = EmbeddingLoader(f"{embeddings_path}.bin")
-    model_args.input_size = embedding_model.vector_size()
+    model_args['input_size'] = embedding_model.vector_size()
     # Obtener embeddings
     x_train_embeddings = embedding_model.get_embeddings(x_train_tokenized) # list[ndarray[ndarray[float]]]
     x_val_embeddings = embedding_model.get_embeddings(x_val_tokenized)
@@ -65,7 +64,7 @@ def train_rnn(dataset_train, dataset_val, embeddings_path,
         x_val_embeddings, y_val, batch_size, collate_fn_rnn, shuffle=False
     )
 
-    model = RNNModel(model_args)
+    model = RNNModel(**model_args)
     class_weights = None
     if use_class_weights is True:
         class_weights = compute_class_weight(
@@ -83,7 +82,6 @@ def train_rnn(dataset_train, dataset_val, embeddings_path,
         early_stopping, epochs
     )
     end = time.time()
-    print(f"Pérdida Entrenamiento = {train_losses[-1]:.4f}, Pérdida Validación = {val_losses[-1]:.4f}")
 
     # Evaluar modelo
     y_pred = trainer.predict(dataloader_val)
@@ -94,10 +92,10 @@ def train_rnn(dataset_train, dataset_val, embeddings_path,
     metrics['lr'] = lr 
     metrics['patience'] = early_stopping.get_patience() 
     metrics['min_delta'] = early_stopping.get_min_delta() 
-    metrics['num_layers'] = model_args.num_layers
-    metrics['hidden_size'] = model_args.hidden_size
-    metrics['dropout'] = model_args.dropout
-    metrics['epochs'] = epochs
+    metrics['num_layers'] = model_args['num_layers']
+    metrics['hidden_size'] = model_args['hidden_size']
+    metrics['dropout'] = model_args['dropout']
+    metrics['epochs'] = f"{len(train_losses)}/{epochs}"
     metrics['batch_size'] = batch_size
     metrics['embedding_dim'] = embedding_model.vector_size()
     metrics['train_time'] = end - start

@@ -217,7 +217,7 @@ def evaluate_model(model, dataset, title, embeddings_path, pooling="aver", batch
     y_pred = np.array(predictions)   
     
     metrics = get_metrics(y_true, y_pred)
-    show_confusion_matrix(y_pred, y_true, title)
+    show_confusion_matrix(y_true,y_pred, title)
     return metrics
 
 class SentimentAnalysis:

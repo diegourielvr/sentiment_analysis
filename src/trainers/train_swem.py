@@ -69,5 +69,5 @@ def evaluate_model(model, dataset, title, embeddings_path, pooling):
 
     y_pred = model.predict(x_pooling)
     metrics = get_metrics(y_true, y_pred)
-    show_confusion_matrix(y_pred, y_true, title)
+    show_confusion_matrix(y_true,y_pred, title)
     return metrics

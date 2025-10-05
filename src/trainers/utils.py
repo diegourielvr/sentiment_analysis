@@ -156,7 +156,7 @@ def evaluate_model(model, dataset, title):
     x, y_true = dataset['text'], dataset['polarity']
     y_pred = model.predict(x)
     metrics = get_metrics(y_true, y_pred)
-    show_confusion_matrix(y_pred, y_true, title)
+    show_confusion_matrix(y_true, y_pred, title)
     return metrics
 
 class EmbeddingLoader:

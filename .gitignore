@@ -13,15 +13,6 @@ __pycache__/
 
 .vscode/
 
-*.png
-*.pth
-*.pt
-*.pkl
-*.bin
-*.model
-
-results/tiktok/metrics/*.csv
-results/twitter/metrics/*.csv
 
 notebooks/tiktok/010_test.ipynb
 notebooks/twitter/010_test.ipynb

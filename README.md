@@ -3,7 +3,7 @@
 ## Estructura
 
 ```bash
-/analisis_sentimientos/
+/sentiment_analysis/
 │
 ├── /data/
 │   ├── dictionaries/               # Diccionarios para corrección ortografica

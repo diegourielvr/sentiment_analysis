@@ -12,6 +12,8 @@ https://huggingface.co/spaces/duvr/sentiment_analysis
 
 ### Dataset de Tiktok
 
+- Dataset propio
+
 #### Métricas
  
 | Modelo           | Accuracy   | Precision  | Recall     | F1-Score   | Tiempo (s) |
@@ -31,6 +33,8 @@ https://huggingface.co/spaces/duvr/sentiment_analysis
 ![Matrices de confusión de modelos entrenados con datos de tiktok](docs/img/cm_tiktok.svg)
 
 ### Dataset de Twitter
+
+- https://www.kaggle.com/datasets/jp797498e/twitter-entity-sentiment-analysis
 
 #### Métricas
 
@@ -61,13 +65,30 @@ https://huggingface.co/spaces/duvr/sentiment_analysis
 - Python 3.11
 - ffmpeg (opcional, para transcribir videos con whisper)
 
+Este proyecto utiliza uv para la gestión de dependencias, se puede instalar facilmente con `pip`:
+
+```bash
+pip install uv
+```
+
 ## Instalación
+
+1. Clonar el respositorio
+
+```bash
+git clone https://github.com/diegourielvr/sentiment_analysis.git
+cd sentiment_analysis
+```
+
+2. Instalar dependencias
 
 ```bash
 uv sync
 ```
 
 ### Modelos NLP
+
+Descargar los modelos necesarios para aplicar técnicas de NLP
 
 #### spaCy
 

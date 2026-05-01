@@ -6,6 +6,8 @@ Prueba el modelo en linea:
 
 https://huggingface.co/spaces/duvr/sentiment_analysis
 
+![Demo en hugging face](docs/img/demo.png)
+
 ## Resultados
 
 ### Dataset de Tiktok

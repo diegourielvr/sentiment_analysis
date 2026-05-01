@@ -1,0 +1,31 @@
+[project]
+name = "sentiment-analysis"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "emoji>=2.15.0",
+    "gensim==4.3.3",
+    "ipykernel>=7.2.0",
+    "matplotlib>=3.10.9",
+    "nltk==3.9.1",
+    "numpy==1.26.4",
+    "openai-whisper>=20250625",
+    "pandas==2.2.3",
+    "plotly>=6.7.0",
+    "scikit-learn==1.6.1",
+    "seaborn>=0.13.2",
+    "spacy==3.8.2",
+    "symspellpy>=6.9.0",
+    "torch==2.5.1",
+    "yt-dlp>=2026.3.17",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"

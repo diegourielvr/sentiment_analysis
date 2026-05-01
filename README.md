@@ -1,5 +1,90 @@
 # Análisis de sentimientos
 
+## Demo
+
+Prueba el modelo en linea:
+
+https://huggingface.co/spaces/duvr/sentiment_analysis
+
+## Resultados
+
+### Dataset de Tiktok
+
+#### Métricas
+ 
+| Modelo           | Accuracy   | Recall     | Precision   | F1-Score   | Tiempo (s) |
+| ---------------- | ---------- | ---------- | ----------- | ---------- | ---------- |
+| SVM              | 70.19\%    | 70.18\%    | **71.42\%** | 70.47\%    | 13.94      |
+| NB               | 67.06\%    | 67.06\%    | 66.84\%     | 65.82\%    | 0.14       |
+| LR               | **70.32%** | **70.32%** | 70.92%      | **70.51%** | 12.33      |
+| SWEM (SVM + AVG) | 65.46\%    | 65.46\%    | 65.50\%     | 65.08\%    | 21.68      |
+| MLP ()           | 64.54\%    | 64.54\%    | 64.42\%     | 64.08\%    | 17.53      |
+| RNN              | 62.54\%    | 62.54\%    | 62.56\%     | 62.09\%    | 91.40      |
+| LSTM             | 68.11\%    | 68.11\%    | 68.41\%     | 68.22\%    | 125.16     |
+
+| Modelo           | Accuracy   | Precision  | Recall     | F1-Score   | Tiempo (s) |
+| ---------------- | ---------- | ---------- | ---------- | ---------- | ---------- |
+| SVM              | 69.34%     | **70.61%** | 69.34%     | 69.57%     | 13.94      |
+| NB               | 66.55%     | 66.41%     | 66.54%     | 65.25%     | 0.14       |
+| LR               | **69.54%** | 70.09%     | **69.54%** | **69.70%** | 12.33      |
+| SWEM (SVM + AVG) | 66.41%     | 66.17%     | 66.41%     | 66.19%     | 21.68      |
+| MLP (AVG)        | 65.22%     | 65.26%     | 65.22%     | 64.98%     | 17.53      |
+| RNN              | 63.22%     | 63.02%     | 63.21%     | 62.82%     | 91.40      |
+| LSTM             | 67.98%     | 68.43%     | 67.98%     | 68.11%     | 125.16     |
+
+
+
+#### Matrices de confusión
+
+![Matrices de confusión de modelos entrenados con datos de tiktok](docs/img/cm_tiktok.svg)
+
+### Dataset de Twitter
+
+#### Métricas
+
+| Modelo | Accuracy   | Recall     | Precision  | F1-Score   | Tiempo (s) |
+| ------ | ---------- | ---------- | ---------- | ---------- | ---------- |
+| SVM    | **95.17%** | **95.17%** | **95.17%** | **95.17%** | 511.41     |
+| NB     | 79.84%     | 79.84%     | 79.97%     | 79.83%     | 0.38       |
+| LR     | 84.45%     | 84.45%     | 84.52%     | 84.46%     | 3.37       |
+| SWEM   | 84.21%     | 84.21%     | 84.31%     | 84.23%     | 482.49     |
+| MLP    | 84.29%     | 84.29%     | 84.34%     | 84.29%     | 145.76     |
+| RNN    | 77.31%     | 77.31%     | 77.36%     | 77.30%     | 548.07     |
+| LSTM   | 90.01%     | 90.01%     | 90.02%     | 90.01%     | 117.56     |
+
+#### Matrices de confusión
+
+![Matrices de confusión de modelos entrenados con datos de twitter](docs/img/cm_twitter.svg)
+
+## Pipeline
+
+1. Tokenización (spaCy)
+2. Lematización (spaCy)
+3. Stemming (NLTK)
+4. Vectorización (sklearn / gensim)
+5. Clasificación (PyTorch / sklearn)
+
+## Requisitos
+
+- Python 3.11
+- ffmpeg (opcional, para transcribir videos con whisper)
+
+## Instalación
+
+```bash
+uv sync
+```
+
+### Modelos NLP
+
+#### spaCy
+
+```bash
+uv run python -m spacy download en_core_web_sm
+uv run python -m spacy download es_core_news_sm
+```
+
+
 ## Estructura
 
 ```bash
@@ -46,6 +131,6 @@
 ├
 ├── /constants/                     # Constantes utilizadas en todo el proyecto 
 │
-├── requirements.txt                # Dependencias del proyecto
+├── pyproject.toml                  # Dependencias del proyecto
 └── README.md                       # Documento del proyecto
 ```
